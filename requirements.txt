@@ -1,0 +1,9 @@
+pandas
+numpy
+yfinance
+fredapi
+python-dotenv
+statsmodels
+scipy
+matplotlib
+openpyxl
