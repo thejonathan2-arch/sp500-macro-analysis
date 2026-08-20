@@ -95,7 +95,7 @@ You'll need a free FRED API key (get one at [fred.stlouisfed.org](https://fred.s
 - The OLS layer's interaction term (unemployment × recession) did not reach conventional significance, even though its sign was consistent with the initial hypothesis — the result is suggestive, not conclusive.
 - The VAR system is limited to 5 variables to preserve degrees of freedom; industrial production was excluded from this layer and retained only as an OLS control.
 - A natural extension would be a Markov-switching model to formally test for regime-dependent effects, rather than relying on a single interaction term.
-- The relationship analysis (unemployment * recession) could be conducted focusing periods post-recessions, where monetary policy regimes aims to improve macroeconomic variables through quatitative easing programs. 
+- The unemployment * recession interraction could be re-examinned focusing specifically on periods post-recessions, where monetary policy regimes actively aim to stimulate macroeconomic recovery. This narrower window migth reveal a clearer effect than the full-sample interaction term used in this analysis.
 
 ## About
 
