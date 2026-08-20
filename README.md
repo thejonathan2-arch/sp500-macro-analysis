@@ -1,14 +1,14 @@
 # S&P 500 Returns vs. U.S. Macroeconomic Indicators
 
-An econometric analysis of how S&P 500 returns relate to unemployment, monetary policy, and inflation across U.S. economic cycles (1991–2026) — combining an OLS regression with regime-dependent effects and a Vector Autoregression (VAR) with Granger causality and impulse-response analysis.
+An econometric analysis of how S&P 500 returns relate to unemployment, monetary policy, and inflation across U.S. economic cycles (1991–2026). The project combines an OLS regression with regime-dependent effects and a Vector Autoregression (VAR) with Granger causality and impulse-response analysis.
 
 ## Motivation
 
-This project started from a simple but puzzling observation: at several points in the recent U.S. economic cycle, the stock market has hit record highs while labor market momentum was clearly slowing. That contradiction (strong markets, weakening economy) is the empirical question this project investigates.
+This project started from a simple but puzzling observation: at several points in the recent U.S. economic cycle, the stock market has hit record highs *while* labor market momentum was clearly slowing. That contradiction between strong markets and a weakening economy is the empirical question this project investigates.
 
 **Research question:** Does unemployment explain S&P 500 returns, and does that relationship change depending on the monetary policy regime and the economic cycle (recession vs. expansion)?
 
-Rather than treating this as a single regression exercise, the project uses two complementary layers: an OLS model to test the conditional average relationship (including how it shifts during NBER-defined recessions), and a VAR model to relax the assumption that macro variables are exogenous — since the Fed itself reacts to market and labor conditions, not just influences them.
+Rather than treating this as a single regression exercise, the project uses two complementary layers: an OLS model to test the conditional average relationship, including how it shifts during NBER-defined recessions, and a VAR model to relax the assumption that macro variables are exogenous. This second layer matters because the Fed itself reacts to market and labor conditions, not just influences them.
 
 ## Data
 
@@ -24,13 +24,13 @@ Rather than treating this as a single regression exercise, the project uses two 
 
 **Sample:** January 1991 – June 2026 (426 monthly observations). The range starts in 1991 rather than 1990 because computing year-over-year inflation consumes the first 12 months of the raw series.
 
-All data is pulled programmatically via `yfinance` and the FRED API (`fredapi`), not downloaded manually — the extraction pipeline is fully reproducible (see `01_data_extraction.ipynb`).
+All data is pulled programmatically via `yfinance` and the FRED API (`fredapi`), not downloaded manually, so the extraction pipeline is fully reproducible (see `01_data_extraction.ipynb`).
 
 ## Methodology
 
 **Layer 1 — OLS regression.** Tests the average conditional relationship between unemployment changes and S&P 500 returns, controlling for the Fed funds rate, industrial production, the 10-year yield, and inflation, with an interaction term allowing the unemployment effect to differ during NBER-defined recessions. Diagnosed for heteroskedasticity (Breusch-Pagan), autocorrelation (Breusch-Godfrey), and multicollinearity (VIF); re-estimated with HC3 robust standard errors.
 
-**Layer 2 — VAR / Granger causality / Impulse-response functions.** The OLS layer assumes the macro variables are exogenous — a strong assumption, since the Fed is known to react to market conditions ("Fed put"). The VAR treats all variables as potentially endogenous, without imposing a causal direction upfront. Granger causality tests then identify which variables actually predict which, and generalized impulse-response functions (IRF) trace the magnitude and duration of significant effects over a 12-month horizon.
+**Layer 2 — VAR / Granger causality / Impulse-response functions.** The OLS layer assumes the macro variables are exogenous, which is a strong assumption since the Fed is known to react to market conditions (the so-called "Fed put"). The VAR treats all variables as potentially endogenous, without imposing a causal direction upfront. Granger causality tests then identify which variables actually predict which, and generalized impulse-response functions (IRF) trace the magnitude and duration of significant effects over a 12-month horizon.
 
 All variables were tested for stationarity (ADF and KPSS) before modeling; non-stationary series were first-differenced (see `03_stationarity_tests.ipynb` for the full decision table).
 
@@ -38,11 +38,11 @@ All variables were tested for stationarity (ADF and KPSS) before modeling; non-s
 
 ### 1. The OLS layer found a weak, statistically fragile relationship
 
-R² = 3.2%, and no variable remained significant at the 5% level once heteroskedasticity-robust standard errors were applied. This is not a failure of the model — monthly equity returns are famously hard to explain with lagged macro fundamentals, consistent with weak-form market efficiency. It does mean a static, contemporaneous specification is the wrong tool for this question.
+R² = 3.2%, and no variable remained significant at the 5% level once heteroskedasticity-robust standard errors were applied. This is not a failure of the model. Monthly equity returns are famously hard to explain with lagged macro fundamentals, consistent with weak-form market efficiency. It does mean a static, contemporaneous specification is the wrong tool for this question.
 
-### 2. The market leads the economy — not the other way around
+### 2. The market leads the economy, not the other way around
 
-Granger causality tests show a strongly asymmetric pattern: S&P 500 returns significantly predict future changes in unemployment, the Fed funds rate, the 10-year yield, and inflation (p < 0.01 in all four cases). In the reverse direction, only inflation has significant predictive power over future S&P 500 returns — unemployment, the Fed funds rate, and the 10-year yield do not.
+Granger causality tests show a strongly asymmetric pattern: S&P 500 returns significantly predict future changes in unemployment, the Fed funds rate, the 10-year yield, and inflation (p < 0.01 in all four cases). In the reverse direction, only inflation has significant predictive power over future S&P 500 returns; unemployment, the Fed funds rate, and the 10-year yield do not.
 
 This also provides direct empirical evidence for the endogeneity assumption behind using a VAR: the Fed funds rate is itself significantly predicted by *past* S&P 500 returns and unemployment changes, confirming the Fed reacts to market and labor conditions rather than being a purely exogenous input.
 
@@ -54,9 +54,9 @@ The impulse-response function for inflation → S&P 500 returns shows no signifi
 
 ![Inflation shock response](images/irf_inflation_to_sp500.png)
 
-This delayed pattern is consistent with Milton Friedman's "long and variable lags" principle: monetary and inflation shocks don't get priced in instantly — they take months to fully propagate. It also explains why the contemporaneous OLS model failed to detect this relationship robustly: the effect simply isn't contemporaneous.
+This delayed pattern is consistent with Milton Friedman's "long and variable lags" principle: monetary and inflation shocks don't get priced in instantly, and instead take months to fully propagate. It also explains why the contemporaneous OLS model failed to detect this relationship robustly: the effect simply isn't contemporaneous.
 
-### 4. The variables don't follow a normal distribution — and that's expected
+### 4. The variables don't follow a normal distribution, and that's expected
 
 None of the continuous variables passed the Jarque-Bera normality test, with S&P 500 returns showing the classic "fat left tail" of financial return series (crashes are more extreme than rallies), and unemployment/inflation showing right-skew tied to recession spikes.
 
@@ -83,7 +83,7 @@ Q-Q plots confirm the same pattern more precisely at the tails: `gs10` shows a b
 ## Reproducing This Analysis
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/thejonathan2-arch/sp500-macro-analysis.git
 cd sp500-macro-analysis
 pip install -r requirements.txt
 ```
@@ -92,11 +92,11 @@ You'll need a free FRED API key (get one at [fred.stlouisfed.org](https://fred.s
 
 ## Limitations & Next Steps
 
-- The OLS layer's interaction term (unemployment × recession) did not reach conventional significance, even though its sign was consistent with the initial hypothesis — the result is suggestive, not conclusive.
+- The OLS layer's interaction term (unemployment × recession) did not reach conventional significance, even though its sign was consistent with the initial hypothesis. The result is suggestive, not conclusive.
 - The VAR system is limited to 5 variables to preserve degrees of freedom; industrial production was excluded from this layer and retained only as an OLS control.
 - A natural extension would be a Markov-switching model to formally test for regime-dependent effects, rather than relying on a single interaction term.
-- The unemployment * recession interraction could be re-examinned focusing specifically on periods post-recessions, where monetary policy regimes actively aim to stimulate macroeconomic recovery. This narrower window migth reveal a clearer effect than the full-sample interaction term used in this analysis.
+- The `unemployment_rate_diff × usrec` interaction could be re-examined focusing specifically on post-recession periods, when monetary policy regimes (e.g., quantitative easing programs) actively aim to stimulate macroeconomic recovery. This narrower window might reveal a clearer effect than the full-sample interaction term used here.
 
 ## About
 
-Built as part of a transition into data analysis, combining a background in economics, financial markets, and econometrics with hands-on Python implementation. Feedback welcome — feel free to open an issue or reach out on [LinkedIn](#).
+Built as part of a transition into data analysis, combining a background in economics, financial markets, and econometrics with hands-on Python implementation. Feedback is welcome, so feel free to open an issue or reach out on [https://www.linkedin.com/in/jonathan-michael-bautista/?locale=en-US](#).
